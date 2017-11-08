@@ -78,20 +78,53 @@ Quelques chiffres (sur GitHub):
 - 76199 followers
 - 1162 issues ouverts (7689 fermées)
 
+???
+Librairie de calcul numérique avec des outils pour le deep learning.
+
+---
+# TensorFlow
+
+Pourquoi "TensorFlow" ?
+
+Un **tenseur** (<i>tensor</i>) est une structure mathématique. Un scalaire est un tenseur d'ordre 0, un vecteur est un tenseur d'ordre 1, une matrice est un tensor d'ordre 2.
+
+- Scalaire: 
+```
+5.23
+``` 
+- Vecteur : 
+```
+[5.3 26.7 33.23]
+```
+- Matrice : 
+```
+| 5.3  26.7  33.23 |
+| 5.3  3.25  22.53 |
+| 8.03 27.1  33.00 |
+```
+
+
 ---
 # TensorFlow 
 
 Fonctionnalités importantes:
 
-- Graphe de calcul statique
-	- <span style="color: green;">(+)</span> Optimisations du graphe possibles
-	- <span style="color: red;">(-)</span> Ne permet pas d'implémenter des comportements dynamiques
-- Programmation déclarative
+- **Graphe de calcul statique**: les noeuds sont les *opérations* et les arêtes sont les *tenseurs*
+	- Le graphe doit être compilé avant d'être utilisé
+	- Optimisations possibles à la compilation
+	- <span><img src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20px" style="position: relative; bottom: -5px;"/></span>&nbsp; Ne permet pas d'implémenter des comportements dynamiques
+- **Programmation déclarative**
 	- Le graphe de calcul est construit de manière déclarative
 	- Un pas vers l'impératif avec **Eager** (pre-alpha)
-- TensorBoard: outil de visualisation
+- **Support (multi) GPU**
+- **TensorBoard**: outil de visualisation, monitoring temps réel via une interface web
+- ...
 
+???
+- **`Dataset` API**: construction de pipelines complexes d'accès aux données
+- **Debugger dédié `tfdbg`** 
 
+*Tenseur*: structure mathématique. Un scalaire est un tenseur d'ordre 0, un vecteur est un tenseur d'ordre 1, une matrice est un tensor d'ordre 2,...
 ---
 # Keras
 
