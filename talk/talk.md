@@ -32,15 +32,37 @@ Un **modèle** peut être vu comme une relation entre une ensemble d'entrées (i
 
 Le **deep learning** est un ensemble de méthodes de machine learning basée sur l'apprentissage de **hierarchies de descripteurs** (<i>hierarchical features</i>). 
 
-Exemples de hierarchies naturelles:
+Un **descripteur** (<i>feature</i>) est une information extraite d'une entité dans le but de la décrire.
 
-- <i>vision par ordinateur</i>: pixel > bord > texton > motif > morceau > objet
+Par exemple, en <i>vision par ordinateur</i>: 
+
+.center[pixel > bord > texton > motif > morceau > objet]
+
+.center[TODO illustration]
+
+???
+
+---
+# Deep learning ?
+
+Autres exemples:
+
 - <i>reconnaissance vocale</i>: échantillon > bande spectrale > formant > motif > phonème > mot
 - <i>traitement du langage naturel</i>: caractère > mot > groupe nominal/verbal > clause > phrase > histoire
 
-<h2 style="text-align: center; padding-top: 40px;">
-	Les méthodes de <em>deep learning</em> exploitent ces hierarchies pour construire des modèles performants.
+<h2 style="text-align: center; padding-top: 40px; font-size: 115%;">
+	Les méthodes de <em>deep learning</em> exploitent ces hierarchies à l'aide de réseaux neuronaux en couche pour obtenir des modèles performants.
 </h2>
+
+.center[TODO illustration]
+
+---
+# Deep **learning** ?
+
+Travailler avec un modèle sur une tâche cible implique en général deux grandes étapes:
+
+1. **entraînement** (<i>training</i>): optimisation du modèle à l'aide de données d'entraînement afin qu'il devienne performant sur la tâche en question
+2. **inférence** (<i>prediction, inference</i>): utilisation du modèle afin de produire une prédiction sur des nouvelles données
 
 ---
 # Deep learning frameworks 
@@ -57,19 +79,19 @@ Beaucoup de frameworks disponibles:
 - **Theano** (fin du support annoncée le 28/09/2017)
 - ...
 
-Message principal: *ne pas se concentrer sur un seul framework !*
+Ne pas s'enfermer dans un framework en particulier ! 
 
 ---
 # TensorFlow
 
-D'après Google: "**<i>An open-source software library for Machine Intelligence</i>** "
+<span style="font-size: 95%">D'après Google: "**<i>An open-source software library for Machine Intelligence</i>** "</span>
 
 Quelques dates:
 
 - 09/11/15: [open-source release](https://research.googleblog.com/2015/11/tensorflow-googles-latest-machine_9.html)
-- 03/01/17: [intégration de Keras](https://research.googleblog.com/2015/11/tensorflow-googles-latest-machine_9.html) comme interface haut-niveau
+- 03/01/17: [choix de Keras](https://research.googleblog.com/2015/11/tensorflow-googles-latest-machine_9.html) comme interface haut-niveau
 - 15/02/17: [version 1.0.0](https://github.com/tensorflow/tensorflow/releases/tag/v1.0.0)
-- 06/11/17: [dernière release stable (1.4.0)](https://github.com/tensorflow/tensorflow/releases/tag/v1.4.0)
+- 06/11/17: [dernière release stable (1.4.0)](https://github.com/tensorflow/tensorflow/releases/tag/v1.4.0), intégration de Keras dans le coeur via `tf.keras`
 
 Quelques chiffres (sur GitHub):
 
@@ -82,11 +104,30 @@ Quelques chiffres (sur GitHub):
 Librairie de calcul numérique avec des outils pour le deep learning.
 
 ---
-# TensorFlow
+# TensorFlow 
+
+<span style="font-size: 90%"> 
+Fonctionnalités importantes:
+
+- **Interface en Python** mais coeur en C++
+- **Graphe de calcul statique**: les noeuds sont les *opérations* et les arêtes sont les *tenseurs*
+	- Le graphe doit être compilé avant d'être utilisé
+	- Optimisations possibles à la compilation
+	- <span><img src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20px" style="position: relative; bottom: -5px;"/></span>&nbsp; Ne permet pas d'implémenter des comportements dynamiques
+- **Support deep learning**: beaucoup de composants de base disponibles
+- **Programmation déclarative**: le graphe de calcul est construit de manière déclarative
+	- Un pas vers l'impératif avec **Eager** (pre-alpha)
+- **Support (multi) GPU**
+- **TensorBoard**: outil de visualisation, monitoring temps réel via une interface web
+</span>
+
+???
+- **`Dataset` API**: construction de pipelines complexes d'accès aux données
+- **Debugger dédié `tfdbg`** 
 
 Pourquoi "TensorFlow" ?
 
-Un **tenseur** (<i>tensor</i>) est une structure mathématique. Un scalaire est un tenseur d'ordre 0, un vecteur est un tenseur d'ordre 1, une matrice est un tensor d'ordre 2.
+Un **tenseur** (<i>tensor</i>) est un objet mathématique. Un scalaire est un tenseur d'ordre 0, un vecteur est un tenseur d'ordre 1, une matrice est un tensor d'ordre 2,... 
 
 - Scalaire: 
 ```
@@ -103,28 +144,6 @@ Un **tenseur** (<i>tensor</i>) est une structure mathématique. Un scalaire est 
 | 8.03 27.1  33.00 |
 ```
 
-
----
-# TensorFlow 
-
-Fonctionnalités importantes:
-
-- **Graphe de calcul statique**: les noeuds sont les *opérations* et les arêtes sont les *tenseurs*
-	- Le graphe doit être compilé avant d'être utilisé
-	- Optimisations possibles à la compilation
-	- <span><img src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20px" style="position: relative; bottom: -5px;"/></span>&nbsp; Ne permet pas d'implémenter des comportements dynamiques
-- **Programmation déclarative**
-	- Le graphe de calcul est construit de manière déclarative
-	- Un pas vers l'impératif avec **Eager** (pre-alpha)
-- **Support (multi) GPU**
-- **TensorBoard**: outil de visualisation, monitoring temps réel via une interface web
-- ...
-
-???
-- **`Dataset` API**: construction de pipelines complexes d'accès aux données
-- **Debugger dédié `tfdbg`** 
-
-*Tenseur*: structure mathématique. Un scalaire est un tenseur d'ordre 0, un vecteur est un tenseur d'ordre 1, une matrice est un tensor d'ordre 2,...
 ---
 # Keras
 
@@ -150,14 +169,6 @@ PyTorch est dévelopé par Facebook. Philosopie:
 
 
 ---
-# Deep **learning** ?
-
-Travailler avec un modèle sur une tâche cible implique en général deux grandes étapes:
-
-1. **entraînement** (<i>training</i>): optimisation du modèle à l'aide de données d'entraînement afin qu'il devienne performant sur la tâche en question
-2. **inférence** (<i>prediction, inference</i>): utilisation du modèle afin de produire une prédiction sur des nouvelles données
-
----
 # Deep learning in practice !
  
 Concentrons-nous sur un problème en particulier: la **reconnaissance d'image**.
@@ -171,10 +182,26 @@ Problème: reconnaissance de chiffres écrits à la main
 <img src="https://clomax.me.uk/assets/images/ocr/mnist.png" hight="50%">
 
 ---
-# Building bricks: perceptron (neurone)
+# Building bricks
+## Binary perceptron
+
+$$ \hat{y} = \sigma\left( \sum\_{i = 1}^{N} w\_{i} x\_{i} \right) $$
 
 ---
-# Building bricks: single-layer perceptron
+# Building bricks0
+## Multi-class perceptron 
+
+- $$ \hat{y} = \mathbf{W} \mathbf{x} $$
+- 
+---
+# Building bricks
+## Single-layer perceptron
+
+- couche 0
+$$ \hat{a}\_k = \sigma\left( \sum\_{i = 1}^{N} w\_{i0k} x\_{i} \right) $$
+
+- neurone de sortie
+$$ \hat{y} = \sigma\left( \sum\_{i = 1}^{K} \sum\_{j = 1}^{w} w\_{k1} a\_{k} \right) $$
 
 ---
 # Building bricks: multi-layer perceptron
@@ -185,13 +212,8 @@ Problème: reconnaissance de chiffres écrits à la main
 ---
 # Building bricks: convolutional layer
 
-
 ---
 # TensorBoard
-
----
-# Eager
-
 
 ---
 # Appendix: comparaison des frameworks
