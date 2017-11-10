@@ -1,5 +1,8 @@
 import tensorflow as tf
 import numpy as np
+import math
+
+from sklearn.metrics import roc_auc_score, accuracy_score
 from tensorflow.contrib.learn.python.learn import datasets
 
 
@@ -20,7 +23,7 @@ def build_model(n_inputs=784, batch_size=None):
     )
 
     a = tf.nn.bias_add(tf.matmul(x, w), b)
-    return x, y, tf.nn.sigmoid(a, name="activation"),
+    return x, y, tf.nn.sigmoid(a, name="activation")
 
 
 def extract_two_digits(digit0, digit1):
@@ -54,39 +57,67 @@ def extract_two_digits(digit0, digit1):
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
+def evaluate_model(sess, x, y, x_test, y_test, batch_size=64):
+    n_samples = x_test.shape[0]
+    n_batches = int(math.ceil(n_samples / batch_size))
+    y_pred = np.zeros([n_samples], dtype=np.float)
+    for i in range(n_batches):
+        start = i * batch_size
+        end = min(n_samples, start + batch_size)
+        _y, = sess.run([y], feed_dict={x: x_test[start:end]})
+        y_pred[start:end] = np.squeeze(_y)
+    acc = accuracy_score(y_test, (y_pred > 0.5).astype(np.int))
+    roc = roc_auc_score(y_test, y_pred)
+    return acc, roc
+
+
 if __name__ == "__main__":
-    # hyperparameters
-    batch_size = 64
-    iterations = 100000
+    # hyper-parameters
+    batch_size = 128
+    epochs = 100
+    iter_per_epoch = 1000
+    learning_rate = 1e-3
 
     # build graph and training machinery
     x, y, y_pred = build_model()
-    loss = - tf.reduce_mean(y * tf.log(y_pred) + (1 - y) * (1 - tf.log(y_pred)), name="loss")
-    optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001).minimize(loss)
+    loss = - tf.reduce_mean(y * tf.log(y_pred + 1e-8) + (1 - y) * tf.log(1 - y_pred + 1e-8), name="loss")
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss)
 
     # get data
-    x_train, y_train, x_val, y_val, x_test, y_test = extract_two_digits(3, 9)
+    x_train, y_train, x_val, y_val, x_test, y_test = extract_two_digits(0, 1)
 
     # build an initializer for all variables
-    initializer = tf.initialize_all_variables()
+    initializer = tf.global_variables_initializer()
 
     # optimize
     with tf.Session() as sess:
+        # to get reproducible results
+        tf.set_random_seed(42)
+        np.random.seed(42)
+
         # save graph for TensorBoard
         writer = tf.summary.FileWriter("./logs", sess.graph)
 
         # initialize the variables
         sess.run([initializer])
 
-        for i in range(iterations):  # 1000 iterations
-            # select a random subset of training data
-            idx = np.random.choice(x_train.shape[0], batch_size)
+        print("Train")
+        for i in range(epochs):
+            for j in range(iter_per_epoch):  # 1000 iterations
+                # select a random subset of training data
+                idx = np.random.choice(x_train.shape[0], batch_size)
 
-            # optimize = run the optimizer with correct inputs
-            feed = {
-                x: x_train[idx, :],
-                y: y_train[idx]
-            }
-            _loss, _ = sess.run([loss, optimizer], feed_dict=feed)
+                # optimize = run the optimizer with correct inputs
+                feed = {
+                    x: x_train[idx, :],
+                    y: y_train[idx]
+                }
+                _loss, _ = sess.run([loss, optimizer], feed_dict=feed)
 
-            print("#{: <5} loss:{}".format(i, _loss))
+            val_acc, val_roc = evaluate_model(sess, x, y_pred, x_val, y_val, batch_size=128)
+            print("> #{: <5} loss:{:.4f} acc:{:.4f} roc:{:.4f}".format(i, _loss, val_acc, val_roc))
+
+        print("Test")
+        test_acc, test_roc = evaluate_model(sess, x, y_pred, x_test, y_test)
+        print("> accuracy: {}".format(test_acc))
+        print("> roc_auc : {}".format(test_roc))
