@@ -115,7 +115,7 @@ if __name__ == "__main__":
                 _loss, _ = sess.run([loss, optimizer], feed_dict=feed)
 
             val_acc, val_roc = evaluate_model(sess, x, y_pred, x_val, y_val, batch_size=128)
-            print("> #{: <5} loss:{:.4f} acc:{:.4f} roc:{:.4f}".format(i, _loss, val_acc, val_roc))
+            print("> #{: <5} train_loss:{:.4f} val_acc:{:.4f} val_roc:{:.4f}".format(i, _loss, val_acc, val_roc))
 
         print("Test")
         test_acc, test_roc = evaluate_model(sess, x, y_pred, x_test, y_test)
