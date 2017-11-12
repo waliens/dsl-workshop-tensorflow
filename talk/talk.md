@@ -22,8 +22,8 @@ Le **machine learning** (supervisé) est un ensemble de méthodes permettant à 
 Un **modèle** peut être vu comme une relation entre une ensemble d'entrées (i.e. les variables) et une sortie. Il possède des **paramètres** que l'on peut modifier afin l'adapter à un problème cible. Par exemple:
 
 .grid[
-	.col-1-1[<img src="images/model_cat_dog.png" height="75%">]
-	.col-2-1[<img src="images/model_mnist.png">]
+    .col-1-1[<img src="images/model_cat_dog.png" height="75%">]
+    .col-2-1[<img src="images/model_mnist.png">]
 ]
 
 ---
@@ -51,7 +51,7 @@ Autres exemples:
 - <i>traitement du langage naturel</i>: caractère > mot > groupe nominal/verbal > clause > phrase > histoire
 
 <h2 style="text-align: center; padding-top: 40px; font-size: 115%;">
-	Les méthodes de <em>deep learning</em> exploitent ces hierarchies à l'aide de réseaux neuronaux en couche pour obtenir des modèles performants.
+    Les méthodes de <em>deep learning</em> exploitent ces hierarchies à l'aide de réseaux neuronaux en couche pour obtenir des modèles performants.
 </h2>
 
 .center[TODO illustration]
@@ -62,16 +62,11 @@ Autres exemples:
 Travailler avec un modèle sur une tâche cible implique en général deux grandes étapes:
 
 - **entraînement** (<i>training, learning</i>): on optimise les paramètres du modèle afin d'améliorer ses performances. Procédure classique: 
-	1. on fournit au modèle un sous-ensemble aléatoire des données d'entraînement (<i>batch</i>) pour lesquels on connait l'objectif et il retourne une prédiction 
-	2. on indique au modèle à quel point il s'est trompé avec une **fonction de perte/d'erreur** (<i>loss function</i>)
-	3. sur base de l'erreur, les paramètres du modèle sont ajustés pour améliorer ses performances (algorithme de **backpropagation**)
-	4. on répète les étapes 1 à 3 jusqu'à ce que le modèle soit suffisamment performant
+    1. on fournit au modèle un sous-ensemble aléatoire des données d'entraînement (<i>batch</i>) pour lesquels on connait l'objectif et il retourne une prédiction 
+    2. on indique au modèle à quel point il s'est trompé avec une **fonction de perte/d'erreur** (<i>loss function</i>)
+    3. sur base de l'erreur, les paramètres du modèle sont ajustés pour améliorer ses performances (algorithme de **backpropagation**)
+    4. on répète les étapes 1 à 3 jusqu'à ce que le modèle soit suffisamment performant
 - **inférence** (<i>prediction, inference</i>): utilisation du modèle afin de produire une prédiction sur des nouvelles données
-
----
-# Deep learning et neural networks ?
-
-Les réseaux neuronaux sont inspirés du fonctionnement du cerveau humain. 
 
 ---
 # Deep learning frameworks 
@@ -118,12 +113,12 @@ Librairie de calcul numérique avec des outils pour le deep learning.
 <span style="font-size: 90%"> 
 - **Interface de programmation en Python** mais coeur en C++
 - **Graphe de calcul statique**: les noeuds sont les *opérations* et les arêtes sont les *tenseurs*
-	- Le graphe doit être compilé avant d'être utilisé
-	- Optimisations possibles à la compilation
-	- <span><img src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20px" style="position: relative; bottom: -5px;"/></span>&nbsp; Ne permet pas d'implémenter des comportements dynamiques
+    - Le graphe doit être compilé avant d'être utilisé
+    - Optimisations possibles à la compilation
+    - <span><img src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20px" style="position: relative; bottom: -5px;"/></span>&nbsp; Ne permet pas d'implémenter des comportements dynamiques
 - **Support deep learning**: beaucoup de composants de base disponibles
 - **Programmation déclarative**: le graphe de calcul est construit de manière déclarative
-	- Un pas vers l'impératif avec **Eager** (pre-alpha)
+    - Un pas vers l'impératif avec **Eager** (pre-alpha)
 - **Support (multi) GPU**
 - **TensorBoard**: outil de visualisation, monitoring temps réel via une interface web
 - ...
@@ -174,7 +169,7 @@ if __name__ == "__main__":
 
     # execution
     with tf.Session() as sess:
-    	feed = {a: 3, b: pi / 2.0}
+        feed = {a: 3, b: pi / 2.0}
         res, = sess.run([y], feed_dict=feed)
 
         print("y: {}".format(res))
@@ -228,9 +223,9 @@ Concentrons-nous sur un problème en particulier: la reconnaissance d'image et p
 
 ---
 # (Deep) learning with TensorFlow
-## Binary perceptron
+## Perceptron binaire - modèle (i)
 
-Commençons par essayer de distinguer deux chiffres avec un modèle simple (et *superficiel*): le **perceptron binaire**.
+Commençons par essayer de distinguer deux chiffres $c\_0$ et $c\_1$ avec un modèle simple (et *superficiel*): le **perceptron binaire**.
 
 $$ \hat{y} = \sigma\left( \sum\_{i = 1}^{N} w\_{i} x\_{i} + b\right) $$
 
@@ -240,16 +235,166 @@ $$ \hat{y} = \sigma\left( \sum\_{i = 1}^{N} w\_{i} x\_{i} + b\right) $$
 
 ???
 
-- un neurone
-- si $\hat{y}$ est positif: premier chiffre
-- si $\hat{y}$ est négatif: second chiffre
+- on transforme/aplati la matrice/image d'entrée un en vecteur (784 éléments)
 
 ---
-# Deep learning with TensorFlow
-## Binary perceptron
+# (Deep) learning with TensorFlow
+## Perceptron binaire - modèle (ii)
+
+- le **perceptron est aussi appelé neurone** car inspiré du fonctionnement de la cellule cérébrale
+- l'opérateur $\sigma(\cdot)$ est la fonction sigmoïde:
+.center[<img src="images/sigmoid.png" height="95%">]
+- $\hat{y}$ est la probabilité que le chiffre soit $c\_1$ 
+- pour déterminer le chiffre, on choisit $c\_0$ si $\hat{y} \leq 0.5$, $c\_1$ sinon
+
+???
 
 
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - modèle (iii)
 
+Pour exploiter les capacités de TensorFlow, on va transformer le perceptron en un **problème vectoriel**. 
+
+$$ \hat{y} = \sigma\left(\mathbf{x}^T\mathbf{w} + b\right) $$
+
+- **entrée**: vecteur $\mathbf{x}$ de $784$ éléments
+- **poids**: un vecteur $\mathbf{w}$ de $784$ éléments
+- **biais**: un scalaire $b$
+
+En pratique, on veut que le modèle puisse **traiter plusieurs images à la fois** !
+
+Dans le code, on va donc plutôt utiliser une matrice d'entrée $\mathbf{X}$ de taille ($B \times 784$) où $B$ est le nombre d'images.
+
+???
+Pourquoi ? plus élégant, GPU
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - modèle (iv)
+
+Entrées et variables: 
+
+- entrée du modèle $\mathbf{X}$ $\rightarrow$ `tf.placeholder`
+```python
+x = tf.placeholder(shape=[None, 784], dtype=tf.float32, name="x")
+```
+   
+- variables du modèle $\mathbf{w}$ et $b$ $\rightarrow$ `tf.Variable` 
+```python
+w = tf.Variable(  # weights
+        initial_value=tf.truncated_normal(shape=[784, 1]),
+        trainable=True, name="w"
+)
+```
+```python
+b = tf.Variable(  # bias
+        initial_value=tf.zeros(shape=[1], dtype=tf.float32),
+        trainable=True, name="b"
+)
+```
+
+???
+- les variables peuvent être <i>entraînables</i> ou non
+- on doit définir une stratégie d'initialisation 
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - modèle (v)
+
+Opérations:
+
+- produit matriciel $\rightarrow$ `tf.matmul`
+```python
+mult = tf.matmul(x, w)
+```
+- ajouter le biais $\rightarrow$ `tf.nn.bias_add`
+```python
+with_bias = tf.nn.bias_add(mult, b)
+```
+- sigmoïde $\rightarrow$ `tf.nn.sigmoid`
+```python
+    out = tf.nn.sigmoid(with_bias, name="out")
+```
+
+Notons l'utilisation de `tf.nn`, le **module <i>neural networks</i> de TensorFlow**.
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - entraînement - loss
+
+Pour optimiser le modèle, il faut pouvoir quantifier son erreur avec la fonction de perte.
+
+**Entropie croisée binaire** (<i>binary cross-entropy</i>): 
+
+$$\mathcal{L}(y, \hat{y}) = - y \log \hat{y} - (1 - y) \log (1 - \hat{y}) $$
+
+- **$y$ identifie le véritable chiffre** pour une image d'entrée. Il vaut 0 si le chiffre est $c\_0$, 1 sinon.
+```python
+y = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="y")
+```
+
+- implémentation (peu robuste) de la fonction de perte
+```python
+ce = - y * tf.log(out) - (1 - y) * tf.log(1 - out)
+loss = tf.reduce_mean(ce, name="loss")
+```
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - entraînement - optimisation
+
+Il faut maintenant définir la **stratégie d'optimisation** que TensorFlow va utiliser pour mettre à jour le modèle.
+
+Nous allons utiliser une **descente de gradient**:
+
+```python
+opt = tf.train.GradientDescentOptimizer(learning_rate=1e-3)
+optimize = opt.minimize(loss)
+```
+
+Beaucoup d'[autres méthodes](https://www.tensorflow.org/api_docs/python/tf/train) sont implémentées dans TensorFlow: 
+
+- `AdamOptimizer`
+- `MomentumOptimizer`
+- `RMSPropOptimizer`
+- ...
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire
+
+.center[<img src="images/perceptron_graph.png" height="450px">]
+
+???
+
+Le graphe est prêt !
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - entraînement - code
+
+```python
+initializer = tf.global_variables_initializer()
+
+with tf.Session() as sess:
+    sess.run([initializer])
+
+    for i in range(1000):
+        feed = {
+            x: # random batch of images...
+            y_true: # and their classes
+        }
+        _loss, _ = sess.run([loss, optimize], feed_dict=feed)
+        print("At iter {}, loss is {}".format(i, _loss))
+```
+<span style="font-size: 65%">
+- On exécute l'opération `minimize` un certain nombre d'itérations
+- À chaque itération, on fournit un batch aléatoire
+- Et .. c'est tout !
+
+.center[**TensorFlow fait beaucoup de chose pour nous dans l'ombre !**]
+</span>
 ---
 # Building bricks0
 ## Multi-class perceptron 
@@ -266,8 +411,6 @@ $$ \hat{a}\_k = \sigma\left( \sum\_{i = 1}^{N} w\_{i0k} x\_{i} \right) $$
 - neurone de sortie
 $$ \hat{y} = \sigma\left( \sum\_{i = 1}^{K} \sum\_{j = 1}^{w} w\_{k1} a\_{k} \right) $$
 
----
-# Building bricks: multi-layer perceptron
 
 ---
 # How to deal with images ?
@@ -289,10 +432,10 @@ Forcer l'exécution sur CPU
 ```python
 # ...
 if __name__ == "__main__":
-	with tf.device('/cpu:0'):
-		a = tf.placeholder(tf.float32, shape=(), name="a")
-    	b = tf.placeholder(tf.float32, shape=(), name="b")
-    	y = tf.sqrt(a + tf.sin(b))
+    with tf.device('/cpu:0'):
+        a = tf.placeholder(tf.float32, shape=(), name="a")
+        b = tf.placeholder(tf.float32, shape=(), name="b")
+        y = tf.sqrt(a + tf.sin(b))
 # ...
 ```
 
@@ -303,10 +446,10 @@ Forcer l'exécution sur un autre GPU que le GPU par défaut (`'/device:GPU:0'`)
 ```python
 # ...
 if __name__ == "__main__":
-	with tf.device('/device:GPU:1'):
-		a = tf.placeholder(tf.float32, shape=(), name="a")
-    	b = tf.placeholder(tf.float32, shape=(), name="b")
-    	y = tf.sqrt(a + tf.sin(b))
+    with tf.device('/device:GPU:1'):
+        a = tf.placeholder(tf.float32, shape=(), name="a")
+        b = tf.placeholder(tf.float32, shape=(), name="b")
+        y = tf.sqrt(a + tf.sin(b))
 # ...
 ```
 
