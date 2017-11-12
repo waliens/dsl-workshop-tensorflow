@@ -9,7 +9,7 @@ from tensorflow.contrib.learn.python.learn import datasets
 def build_model(n_inputs=784, batch_size=None):
     # building the graph
     x = tf.placeholder(shape=[batch_size, n_inputs], dtype=tf.float32, name="x")
-    y = tf.placeholder(shape=[batch_size], dtype=tf.float32, name="y")
+    y_true = tf.placeholder(shape=[batch_size], dtype=tf.float32, name="y_true")
 
     w = tf.Variable(
         initial_value=tf.truncated_normal(shape=[n_inputs, 1]),
@@ -23,7 +23,7 @@ def build_model(n_inputs=784, batch_size=None):
     )
 
     a = tf.nn.bias_add(tf.matmul(x, w), b)
-    return x, y, tf.nn.sigmoid(a, name="activation")
+    return x, y_true, tf.nn.sigmoid(a, name="activation")
 
 
 def extract_two_digits(digit0, digit1):
@@ -71,7 +71,7 @@ def evaluate_model(sess, x, y, x_test, y_test, batch_size=64):
     return acc, roc
 
 
-if __name__ == "__main__":
+def main():
     # hyper-parameters
     batch_size = 128
     epochs = 100
@@ -79,8 +79,8 @@ if __name__ == "__main__":
     learning_rate = 1e-3
 
     # build graph and training machinery
-    x, y, y_pred = build_model()
-    loss = - tf.reduce_mean(y * tf.log(y_pred + 1e-8) + (1 - y) * tf.log(1 - y_pred + 1e-8), name="loss")
+    x, y_true, y_pred = build_model()
+    loss = - tf.reduce_mean(y_true * tf.log(y_pred + 1e-8) + (1 - y_true) * tf.log(1 - y_pred + 1e-8), name="loss")
     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss)
 
     # get data
@@ -110,7 +110,7 @@ if __name__ == "__main__":
                 # optimize = run the optimizer with correct inputs
                 feed = {
                     x: x_train[idx, :],
-                    y: y_train[idx]
+                    y_true: y_train[idx]
                 }
                 _loss, _ = sess.run([loss, optimizer], feed_dict=feed)
 
@@ -121,3 +121,7 @@ if __name__ == "__main__":
         test_acc, test_roc = evaluate_model(sess, x, y_pred, x_test, y_test)
         print("> accuracy: {}".format(test_acc))
         print("> roc_auc : {}".format(test_roc))
+
+
+if __name__ == "__main__":
+    main()
