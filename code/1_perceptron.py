@@ -10,20 +10,20 @@ def build_model(n_inputs=784, batch_size=None):
     # building the graph
     x = tf.placeholder(shape=[batch_size, n_inputs], dtype=tf.float32, name="x")
     y_true = tf.placeholder(shape=[batch_size], dtype=tf.float32, name="y_true")
-
     w = tf.Variable(
         initial_value=tf.truncated_normal(shape=[n_inputs, 1]),
         trainable=True,
-        name="w"
+        name="weights"
     )
-    b = tf.Variable(
+    bias = tf.Variable(
         initial_value=tf.zeros(shape=[1], dtype=tf.float32),
         trainable=True,
-        name="b"
+        name="bias"
     )
-
-    a = tf.nn.bias_add(tf.matmul(x, w), b)
-    return x, y_true, tf.nn.sigmoid(a, name="activation")
+    prod = tf.matmul(x, w)
+    with_bias = tf.nn.bias_add(prod, bias)
+    activation = tf.nn.sigmoid(with_bias, name="activation")
+    return x, y_true, activation
 
 
 def extract_two_digits(digit0, digit1):
@@ -74,13 +74,13 @@ def evaluate_model(sess, x, y, x_test, y_test, batch_size=64):
 def main():
     # hyper-parameters
     batch_size = 128
-    epochs = 100
-    iter_per_epoch = 1000
-    learning_rate = 1e-3
+    epochs = 10
+    iter_per_epoch = 430
+    learning_rate = 5e-2
 
     # build graph and training machinery
     x, y_true, y_pred = build_model()
-    loss = - tf.reduce_mean(y_true * tf.log(y_pred + 1e-8) + (1 - y_true) * tf.log(1 - y_pred + 1e-8), name="loss")
+    loss = tf.reduce_mean(- y_true * tf.log(y_pred + 1e-8) - (1 - y_true) * tf.log(1 - y_pred + 1e-8), name="loss")
     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss)
 
     # get data
@@ -103,6 +103,7 @@ def main():
 
         print("Train")
         for i in range(epochs):
+            losses = list()
             for j in range(iter_per_epoch):  # 1000 iterations
                 # select a random subset of training data
                 idx = np.random.choice(x_train.shape[0], batch_size)
@@ -113,9 +114,10 @@ def main():
                     y_true: y_train[idx]
                 }
                 _loss, _ = sess.run([loss, optimizer], feed_dict=feed)
+                losses.append(_loss)
 
             val_acc, val_roc = evaluate_model(sess, x, y_pred, x_val, y_val, batch_size=128)
-            print("> #{: <5} train_loss:{:.4f} val_acc:{:.4f} val_roc:{:.4f}".format(i, _loss, val_acc, val_roc))
+            print("> #{: <5} train_loss:{:.4f} val_acc:{:.4f} val_roc:{:.4f}".format(i, np.mean(losses), val_acc, val_roc))
 
         print("Test")
         test_acc, test_roc = evaluate_model(sess, x, y_pred, x_test, y_test)
