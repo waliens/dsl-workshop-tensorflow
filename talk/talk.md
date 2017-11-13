@@ -222,7 +222,7 @@ Concentrons-nous sur un problème en particulier: la reconnaissance d'image et p
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - modèle (i)
+## Perceptron binaire > modèle (i)
 
 Commençons par essayer de distinguer deux chiffres $c\_0$ et $c\_1$ avec un modèle simple (et *superficiel*): le **perceptron binaire**.
 
@@ -238,7 +238,7 @@ $$ \hat{y} = \sigma\left( \sum\_{i = 1}^{N} w\_{i} x\_{i} + b\right) $$
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - modèle (ii)
+## Perceptron binaire > modèle (ii)
 
 - le **perceptron est aussi appelé neurone** car inspiré du fonctionnement de la cellule cérébrale
 - l'opérateur $\sigma(\cdot)$ est la fonction sigmoïde: $\sigma(x) = \frac{1}{1 + e^{-x}}$
@@ -254,7 +254,7 @@ $$ \hat{y} = \sigma\left( \sum\_{i = 1}^{N} w\_{i} x\_{i} + b\right) $$
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - modèle (iii)
+## Perceptron binaire > modèle (iii)
 
 Pour exploiter les capacités de TensorFlow, on va transformer le perceptron en un **problème vectoriel**. 
 
@@ -273,7 +273,7 @@ Pourquoi ? pas possible d'implémenter efficacement autrement, plus élégant, G
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - modèle (iv)
+## Perceptron binaire > modèle (iv)
 
 Entrées et variables: 
 
@@ -303,7 +303,7 @@ b = tf.Variable(  # bias
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - modèle (v)
+## Perceptron binaire > modèle (v)
 
 Opérations:
 
@@ -324,7 +324,7 @@ Notons l'utilisation de `tf.nn`, le **module <i>neural networks</i> de TensorFlo
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - entraînement - loss
+## Perceptron binaire > entraînement > loss
 
 Pour optimiser le modèle, il faut pouvoir quantifier son erreur avec la fonction de perte.
 
@@ -345,7 +345,7 @@ loss = tf.reduce_mean(ce, name="loss")
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - entraînement - optimisation
+## Perceptron binaire > entraînement > optimisation
 
 Il faut maintenant définir la **stratégie d'optimisation** que TensorFlow va utiliser pour mettre à jour le modèle.
 
@@ -375,7 +375,7 @@ Le graphe est prêt !
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - entraînement - code
+## Perceptron binaire > entraînement > code
 
 ```python
 initializer = tf.global_variables_initializer()
@@ -406,7 +406,14 @@ with tf.Session() as sess:
 
 ---
 # Deep learning with TensorFlow
-## Vers un modèle plus réaliste 
+## Perceptron binaire > résultats 
+
+TODO
+
+
+---
+# Deep learning with TensorFlow
+## Vers un modèle plus réaliste... 
 
 Le *perceptron binaire* n'est jamais utilisé seul dans les applications réelles car **ce modèle est trop simple**.
 
@@ -423,9 +430,6 @@ Nous allons étudier un *autre modèle* qui:
    	Ce modèle est le <em>perceptron multicouche</em> <br> 
    	<span style="font-size: 80%">(<i>multi-layer perceptron</i>)</span>
 </h2>
-.center[
-	
-]
 
 ---
 # Deep learning with TensorFlow
@@ -442,7 +446,7 @@ Ce modèle est un ensemble de perceptrons arrangés **en couches**.
 
 ---
 # Deep learning with TensorFlow
-## Perceptron multicouche - mathématiquement (i)
+## Perceptron multicouche > définition (i)
 
 - $L$ est le **nombre de couches**. La couche 0 est le vecteur d'entrée $\mathbf{x}$ 
 - $n_l$ est le **nombre de neurones** à la couche $l \in [0, L]$
@@ -456,7 +460,7 @@ $$\mathbf{\hat{y}}  = \text{softmax}\left(\mathbf{a}\_{L-1}^T \mathbf{W}\_L + \m
 
 ---
 # Deep learning with TensorFlow
-## Perceptron multicouche - mathématiquement (ii)
+## Perceptron multicouche > définition (ii)
 
 La fonction **softmax** est une nouvelle *fonction d'activation*:
 
@@ -465,20 +469,172 @@ La fonction **softmax** est une nouvelle *fonction d'activation*:
 $$ \text{softmax}(\mathbf{x})\_i = \dfrac{e^{x\_i}}{\sum\_{k = 1}^{n} e^{x\_k}} $$ 
 
 - $\text{softmax}(\mathbf{x})\_i$ peut être interprété comme une probabilité
-- dans notre cas:
-	- la *sortie du réseau* $\mathbf{\hat{y}}$ est donc un *vecteur de probabilité* 
-	- l'élément **$\hat{y}\_i$ est la probabilité que le chiffre soit $i$**
-- pour déterminer le chiffre prédit: 
+- la *sortie du réseau* $\mathbf{\hat{y}}$ est donc un *vecteur de probabilité* 
+- l'élément **$\hat{y}\_i$ est la probabilité que le chiffre soit $i$**
 
-$$ \arg\max_i \mathbf{\hat{y}} $$
+???
+- entropie croisée multi-classe: 
+
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche > implémentation (i)
+
+- fonction générique pour créer un couche dense (<i>fully connected</i> or <i> dense layer</i>):
+```python
+def layer(input_layer, input_size, output_size, name=""):
+        w = tf.Variable(
+            initial_value=tf.truncated_normal([input_size, output_size]),
+            trainable=True, name="{}/weights".format(name)
+        )
+        bias = tf.Variable(
+            initial_value=tf.zeros([output_size]),
+            trainable=True, name="{}/bias".format(name)
+        )
+
+        # compute activation
+        prod = tf.matmul(input_layer, w)
+        with_bias = tf.nn.bias_add(prod, bias)
+        return tf.nn.sigmoid(with_bias, name="{}/out".format(name))
+```
+
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche > implémentation (ii)
+
+- *vecteur de sortie* $\mathbf{y}$ ($y\_i$ vaut 1 si le véritable chiffre est $i$, 0 sinon):
+```python
+y = tf.placeholder([None, 10], dtype=tf.float32, name="y")
+```
+
+- construction des *couches cachées* (ici 3 couches de tailles 64, 32 et 16):
+```python
+prev_layer = x
+prev_size = 784
+for i, size in enumerate([64, 32, 16]):
+        prev_layer = layer(
+            input_layer=prev_layer,
+            input_size=prev_size, 
+            output_size=size,
+            name="hidden_{}".format(i + 1)
+        )
+        prev_size = size
+```
+
+
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche > implémentation (iii)
+
+- la *couche de sortie*:
+```python
+    classif = layer(
+        input_layer=prev_layer,
+        input_size=prev_size, 
+        output_size=10
+        name="output_layer"
+    )
+
+    out = tf.nn.softmax(classif)
+```
+
+- la *fonction de perte*: $ $ $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = - \sum\_{i = 1}^{10} y\_i \log \hat{y}\_i$
+```python
+    ce = - tf.reduce_sum(y * tf.log(out), axis=-1)
+    loss = tf.reduce_mean(ce)
+```
+
+- on utilise le **même code d'entraînement** !
+
+
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche > graphe
+
+.col-gallery[
+    <img src="images/mlp_tb.png" height="450px">
+    <img src="images/mlp_tb_h3.png" height="450px">
+]
+
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche > résultats
+
+TODO
+
+---
+# Deep learning with Keras
+## Perceptron multicouche > implémentation (i)
+
+**Keras** propose une interface de plus haut niveau que TensorFlow:
+
+- le modèle est un objet de type `Model` 
+- un `Model` est une succession de `Layer` (par ex.: `Dense` pour une couche <i>fully connected</i>)
+
+Pour construire le même réseau que précédemment:
+```python
+input = Input(shape=(784,))
+
+# create hidden layers
+x = input
+for size in [64, 32, 16]:
+    x = Dense(size, activation="sigmoid", use_bias=True)(x)
+
+# output layer
+x = Dense(10, activation="softmax")(x)
+model = Model(inputs=[input], outputs=[x])
+```
+
+---
+# Deep learning with Keras
+## Perceptron multicouche > implémentation (ii)
+
+- c'est à la **compilation du modèle** qu'on précise la *fonction de perte* et la *stratégie d'optimisation*:
+```python
+model.compile(
+        optimizer=sgd(lr=5e-2), 
+        loss="categorical_crossentropy", 
+        metrics=["accuracy"]
+)
+```
+
+- *entraînement* via la méthode `fit` de `Model`:
+```python
+# train
+model.fit(
+        x=# all training images ...
+        y=# all training classes ...
+        batch_size=batch_size,
+        epochs=epochs
+)
+``` 
+
+---
+# Deep learning with Keras
+## Perceptron multicouche > implémentation (iii)
+
+- `fit` écrit des *informations sur la progression de l'entraînement* sur la sortie standard: 
+```logs
+Epoch 1/200
+55000/55000 [============] - 4s - val_loss: 2.3002 - val_acc: 0.1126
+Epoch 2/200
+55000/55000 [============] - 1s - val_loss: 2.2999 - val_acc: 0.1126
+Epoch 3/200
+55000/55000 [============] - 1s - val_loss: 2.2988 - val_acc: 0.1126
+Epoch 4/200
+43648/55000 [=========>..] - ETA: 0s - loss: 2.2988 - acc: 0.1172
+```
+
+- *inférence* via la méthode `predict` de `Model`:
+```python
+y_pred = model.predict(new_images, batch_size=batch_size)
+```
+
 ---
 # How to deal with images ?
 
 ---
-# Building bricks: convolutional layer
+# Pre-trained model
 
----
-# TensorBoard
 
 ---
 # TensorFlow
@@ -514,7 +670,7 @@ if __name__ == "__main__":
 
 ---
 # (Deep) learning with TensorFlow
-## Perceptron binaire - inférence - code
+## Perceptron binaire > inférence - code
 
 ```python
     # ... in the same session 
