@@ -22,8 +22,8 @@ Le **machine learning** (supervisé) est un ensemble de méthodes permettant à 
 Un **modèle** peut être vu comme une relation entre une ensemble d'entrées (i.e. les variables) et une sortie. Il possède des **paramètres** que l'on peut modifier afin l'adapter à un problème cible. Par exemple:
 
 .grid[
-    .col-1-1[<img src="images/model_cat_dog.png" height="75%">]
-    .col-2-1[<img src="images/model_mnist.png">]
+    <img src="images/model_cat_dog.png" height="75%">
+    <img src="images/model_mnist.png">
 ]
 
 ---
@@ -176,7 +176,9 @@ if __name__ == "__main__":
 ```
 
 ???
-Runs on GPU by default if one is available and if TensorFlow was installed with GPU support
+- s'exécute sur GPU par défaut si un est disponible et si tensorflow est installé avec support GPU
+
+- compilation du graphe lors de l'instanciation de la session
 
 ---
 # TensorFlow
@@ -349,8 +351,8 @@ Il faut maintenant définir la **stratégie d'optimisation** que TensorFlow va u
 Nous allons utiliser une **descente de gradient**:
 
 ```python
-opt = tf.train.GradientDescentOptimizer(learning_rate=1e-3)
-optimize = opt.minimize(loss)
+optimizer = tf.train.GradientDescentOptimizer(learning_rate=1e-3)
+minimize = optimizer.minimize(loss)
 ```
 
 Beaucoup d'[autres méthodes](https://www.tensorflow.org/api_docs/python/tf/train) sont implémentées dans TensorFlow: 
@@ -385,7 +387,7 @@ with tf.Session() as sess:
             x: # random batch of images...
             y_true: # and their classes
         }
-        _loss, _ = sess.run([loss, optimize], feed_dict=feed)
+        _loss, _ = sess.run([loss, minimize], feed_dict=feed)
         print("At iter {}, loss is {}".format(i, _loss))
 ```
 <span style="font-size: 65%">
@@ -393,13 +395,28 @@ with tf.Session() as sess:
 - À chaque itération, on fournit un batch aléatoire
 - Et .. c'est tout !
 
-.center[**TensorFlow fait beaucoup de chose pour nous dans l'ombre !**]
+.center[**TensorFlow fait beaucoup de choses pour nous dans l'ombre !**]
 </span>
----
-# Building bricks0
-## Multi-class perceptron 
 
-- $$ \hat{y} = \mathbf{W} \mathbf{x} $$
+???
+- forward pass
+- backpropagation
+- mise à jour des poids
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire
+
+Après entraînement, les performances du modèles sont les suivantes:
+
+
+En résumé: 
+
+- modèle extrêmement simple... et **trop simple pour capturer la complexité (relative) de notre problème**
+- on ne peut pas le classer dans la c
+
+
+
 
 ---
 # Building bricks
@@ -451,6 +468,19 @@ if __name__ == "__main__":
         b = tf.placeholder(tf.float32, shape=(), name="b")
         y = tf.sqrt(a + tf.sin(b))
 # ...
+```
+
+---
+# (Deep) learning with TensorFlow
+## Perceptron binaire - inférence - code
+
+```python
+    # ... in the same session 
+    for i in range(1000):
+        feed = {
+            x: # batch of images with unknown class
+        }
+        probas, = sess.run([out], feed_dict=feed)
 ```
 
 ---
