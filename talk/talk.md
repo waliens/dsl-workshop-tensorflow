@@ -34,11 +34,9 @@ Le **deep learning** est un ensemble de méthodes de machine learning basée sur
 
 Un **descripteur** (<i>feature</i>) est une information extraite d'une entité dans le but de la décrire.
 
-Par exemple, en <i>vision par ordinateur</i>: 
+En <i>vision par ordinateur</i>: *pixel > bord > texton > motif > morceau > objet*
 
-.center[pixel > bord > texton > motif > morceau > objet]
-
-.center[TODO illustration]
+.center[<img src="images/hierarchical_data.png" height="350px">]
 
 ???
 
@@ -49,12 +47,11 @@ Autres exemples:
 
 - <i>reconnaissance vocale</i>: échantillon > bande spectrale > formant > motif > phonème > mot
 - <i>traitement du langage naturel</i>: caractère > mot > groupe nominal/verbal > clause > phrase > histoire
-
-<h2 style="text-align: center; padding-top: 40px; font-size: 115%;">
+<h2 style="text-align: center; padding-top: 20px; font-size: 115%;">
     Les méthodes de <em>deep learning</em> exploitent ces hierarchies à l'aide de réseaux neuronaux en couche pour obtenir des modèles performants.
 </h2>
 
-.center[TODO illustration]
+.center[<img src="images/nn_learns_hfeatures.png" height="225px">]
 
 ---
 # Deep **learning** ?
@@ -62,9 +59,9 @@ Autres exemples:
 Travailler avec un modèle sur une tâche cible implique en général deux grandes étapes:
 
 - **entraînement** (<i>training, learning</i>): on optimise les paramètres du modèle afin d'améliorer ses performances. Procédure classique: 
-    1. on fournit au modèle un sous-ensemble aléatoire des données d'entraînement (<i>batch</i>) pour lesquels on connait l'objectif et il retourne une prédiction 
-    2. on indique au modèle à quel point il s'est trompé avec une **fonction de perte/d'erreur** (<i>loss function</i>)
-    3. sur base de l'erreur, les paramètres du modèle sont ajustés pour améliorer ses performances (algorithme de **backpropagation**)
+    1. on fournit au modèle un sous-ensemble aléatoire des données d'entraînement (<i>batch</i>) pour lesquels on connait l'objectif et il retourne un ensemble de prédiction $\hat{y}$
+    2. on indique au modèle à quel point ces prédictions $\hat{y}$ sont erronnées à l'aide d'une **fonction de perte/d'erreur** (<i>loss function</i>)
+    3. sur base de l'erreur, les paramètres du modèle sont ajustés pour améliorer ses performances (via **backpropagation**)
     4. on répète les étapes 1 à 3 jusqu'à ce que le modèle soit suffisamment performant
 - **inférence** (<i>prediction, inference</i>): utilisation du modèle afin de produire une prédiction sur des nouvelles données
 
@@ -244,8 +241,11 @@ $$ \hat{y} = \sigma\left( \sum\_{i = 1}^{N} w\_{i} x\_{i} + b\right) $$
 ## Perceptron binaire - modèle (ii)
 
 - le **perceptron est aussi appelé neurone** car inspiré du fonctionnement de la cellule cérébrale
-- l'opérateur $\sigma(\cdot)$ est la fonction sigmoïde:
-.center[<img src="images/sigmoid.png" height="95%">]
+- l'opérateur $\sigma(\cdot)$ est la fonction sigmoïde: $\sigma(x) = \frac{1}{1 + e^{-x}}$
+
+.center[<img src="images/sigmoid.png" height="90%">]
+
+- $\sigma(\cdot)$ est la **fonction d'activation** du neurone
 - $\hat{y}$ est la probabilité que le chiffre soit $c\_1$ 
 - pour déterminer le chiffre, on choisit $c\_0$ si $\hat{y} \leq 0.5$, $c\_1$ sinon
 
@@ -260,8 +260,8 @@ Pour exploiter les capacités de TensorFlow, on va transformer le perceptron en 
 
 $$ \hat{y} = \sigma\left(\mathbf{x}^T\mathbf{w} + b\right) $$
 
-- **entrée**: vecteur $\mathbf{x}$ de $784$ éléments
-- **poids**: un vecteur $\mathbf{w}$ de $784$ éléments
+- **entrée**: un vecteur $\mathbf{x}$ de 784 éléments
+- **poids**: un vecteur $\mathbf{w}$ de 784 éléments
 - **biais**: un scalaire $b$
 
 En pratique, on veut que le modèle puisse **traiter plusieurs images à la fois** !
@@ -269,7 +269,7 @@ En pratique, on veut que le modèle puisse **traiter plusieurs images à la fois
 Dans le code, on va donc plutôt utiliser une matrice d'entrée $\mathbf{X}$ de taille ($B \times 784$) où $B$ est le nombre d'images.
 
 ???
-Pourquoi ? plus élégant, GPU
+Pourquoi ? pas possible d'implémenter efficacement autrement, plus élégant, GPU
 
 ---
 # (Deep) learning with TensorFlow
@@ -297,6 +297,7 @@ b = tf.Variable(  # bias
 ```
 
 ???
+- None indique une taille indéterminée
 - les variables peuvent être <i>entraînables</i> ou non
 - on doit définir une stratégie d'initialisation 
 
@@ -336,7 +337,7 @@ $$\mathcal{L}(y, \hat{y}) = - y \log \hat{y} - (1 - y) \log (1 - \hat{y}) $$
 y = tf.placeholder(shape=[None, 1], dtype=tf.float32, name="y")
 ```
 
-- implémentation (peu robuste) de la fonction de perte
+- implémentation de la fonction de perte
 ```python
 ce = - y * tf.log(out) - (1 - y) * tf.log(1 - out)
 loss = tf.reduce_mean(ce, name="loss")
@@ -404,31 +405,72 @@ with tf.Session() as sess:
 - mise à jour des poids
 
 ---
-# (Deep) learning with TensorFlow
-## Perceptron binaire
+# Deep learning with TensorFlow
+## Vers un modèle plus réaliste 
 
-Après entraînement, les performances du modèles sont les suivantes:
+Le *perceptron binaire* n'est jamais utilisé seul dans les applications réelles car **ce modèle est trop simple**.
 
+- il ne permet pas de *capturer la complexité* de problèmes réels
+- il est limité à des *problèmes binaires* 
+- il ne permet pas d'exploiter la *nature hierarchique* de certains problèmes
 
-En résumé: 
+Nous allons étudier un *autre modèle* qui:
 
-- modèle extrêmement simple... et **trop simple pour capturer la complexité (relative) de notre problème**
-- on ne peut pas le classer dans la c
+- combine des perceptrons
+- tente de résoudre les problèmes évoqués ci-dessus
 
-
-
+<h2 style="text-align: center; padding-top: 20px; font-size: 115%;">
+   	Ce modèle est le <em>perceptron multicouche</em> <br> 
+   	<span style="font-size: 80%">(<i>multi-layer perceptron</i>)</span>
+</h2>
+.center[
+	
+]
 
 ---
-# Building bricks
-## Single-layer perceptron
+# Deep learning with TensorFlow
+## Perceptron multicouche
+Ce modèle est un ensemble de perceptrons arrangés **en couches**.
 
-- couche 0
-$$ \hat{a}\_k = \sigma\left( \sum\_{i = 1}^{N} w\_{i0k} x\_{i} \right) $$
+.center[<img src="images/mlp.png" height="250px">]
 
-- neurone de sortie
-$$ \hat{y} = \sigma\left( \sum\_{i = 1}^{K} \sum\_{j = 1}^{w} w\_{k1} a\_{k} \right) $$
+<span style="font-size: 0.8em;">
+- les couches internes s'appellent **couches cachées** (<i>hidden layer</i>)
+- chaque neurone est connecté à tous les neurones de la couche précédente
+- il y a *autant de neurones que de classes* dans la dernière couche 
+</span>
 
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche - mathématiquement (i)
 
+- $L$ est le **nombre de couches**. La couche 0 est le vecteur d'entrée $\mathbf{x}$ 
+- $n_l$ est le **nombre de neurones** à la couche $l \in [0, L]$
+- $\mathbf{W}\_l$ est la **matrice des poids** de la couche $l \in [1, L]$, (dim. $n\_{l-1} \times n\_l$) 
+- $\mathbf{b}\_l$ est le **vecteur de biais** pour la couche $l \in [1, L]$ (dim. $n\_l$)
+- *couche d'entrée* (<i>input layer</i>, $l = 0$, $n\_l = 784$): $ $ $\mathbf{a}\_0  = \mathbf{x}$
+- *couche cachée* (<i>hidden layer</i>, $l \in [1, L-1]$): 
+$$ \mathbf{a}\_l  = \sigma\left(\mathbf{a}\_{l-1}^T \mathbf{W}\_l + \mathbf{b}\_l \right) $$
+- *couche de sortie* (<i>output layer</i>, $l = L$, $n\_l = 10$): 
+$$\mathbf{\hat{y}}  = \text{softmax}\left(\mathbf{a}\_{L-1}^T \mathbf{W}\_L + \mathbf{b}\_L \right)$$
+
+---
+# Deep learning with TensorFlow
+## Perceptron multicouche - mathématiquement (ii)
+
+La fonction **softmax** est une nouvelle *fonction d'activation*:
+
+- elle est définie comme suit: elle prend en entrée un vecteur $\mathbf{x}$ de taille $n$
+
+$$ \text{softmax}(\mathbf{x})\_i = \dfrac{e^{x\_i}}{\sum\_{k = 1}^{n} e^{x\_k}} $$ 
+
+- $\text{softmax}(\mathbf{x})\_i$ peut être interprété comme une probabilité
+- dans notre cas:
+	- la *sortie du réseau* $\mathbf{\hat{y}}$ est donc un *vecteur de probabilité* 
+	- l'élément **$\hat{y}\_i$ est la probabilité que le chiffre soit $i$**
+- pour déterminer le chiffre prédit: 
+
+$$ \arg\max_i \mathbf{\hat{y}} $$
 ---
 # How to deal with images ?
 

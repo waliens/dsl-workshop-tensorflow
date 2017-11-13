@@ -225,3 +225,24 @@ td {
 .title-slide {
     vertical-align: middle;
 }
+
+.col-gallery {
+    display: block;
+    text-align: center;
+}
+
+.col-gallery img {
+    width: auto;
+}
+
+.col-left {
+    width: 50%;
+    float: left;
+    vertical-align: center;
+}
+
+.col-right {
+    width: 50%;
+    float: right;
+    vertical-align: center;
+}
