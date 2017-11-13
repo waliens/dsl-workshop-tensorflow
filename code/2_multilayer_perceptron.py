@@ -84,7 +84,7 @@ def main():
 
     # hyper-parameters
     batch_size = 128
-    epochs = 400
+    epochs = 200
     iter_per_epoch = 400
     learning_rate = 5e-2
     hidden_layers = [64, 64, 32, 8]
@@ -101,7 +101,7 @@ def main():
     optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate).minimize(loss)
 
     # get data
-    mnist = datasets.mnist.read_data_sets("./data", one_hot=True)
+    mnist = datasets.mnist.read_data_sets("../data", one_hot=True)
     x_train = mnist.train.images
     y_train = mnist.train.labels
     x_val = mnist.validation.images

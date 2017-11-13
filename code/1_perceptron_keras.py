@@ -9,7 +9,7 @@ from tensorflow.contrib.learn.python.learn import datasets
 
 def extract_two_digits(digit0, digit1):
     # load data
-    mnist = datasets.mnist.load_mnist("./data")
+    mnist = datasets.mnist.load_mnist("../data")
     x_train = mnist.train.images
     y_train = mnist.train.labels
     x_val = mnist.validation.images

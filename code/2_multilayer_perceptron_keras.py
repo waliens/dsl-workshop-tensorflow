@@ -35,7 +35,7 @@ if __name__ == "__main__":
     model.compile(sgd(lr=5e-2), "categorical_crossentropy", metrics=["accuracy"])
 
     # get data
-    mnist = datasets.mnist.read_data_sets("./data", one_hot=True)
+    mnist = datasets.mnist.read_data_sets("../data", one_hot=True)
     x_train = mnist.train.images
     y_train = mnist.train.labels
     x_val = mnist.validation.images
