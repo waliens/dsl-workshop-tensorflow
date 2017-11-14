@@ -75,7 +75,7 @@ def main():
     # hyper-parameters
     batch_size = 128
     epochs = 10
-    iter_per_epoch = 430
+    iter_per_epoch = 86
     learning_rate = 5e-2
 
     # build graph and training machinery
