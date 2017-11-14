@@ -5,7 +5,7 @@ from sklearn.metrics import accuracy_score
 from tensorflow.contrib.learn.python.learn import datasets
 
 
-def layer(input_layer, input_size, output_size, keep_proba=None, name=""):
+def layer(input_layer, input_size, output_size, activation="sigmoid", keep_proba=None, name=""):
     with tf.variable_scope(name):
         w = tf.Variable(
             initial_value=tf.truncated_normal([input_size, output_size], seed=np.random.randint(9999999)),
@@ -21,12 +21,14 @@ def layer(input_layer, input_size, output_size, keep_proba=None, name=""):
         # compute activation
         prod = tf.matmul(input_layer, w)
         with_bias = tf.nn.bias_add(prod, bias)
-        activation = tf.nn.sigmoid(with_bias, name="out")
 
-        if keep_proba is not None:
+        if activation == "sigmoid":
+            activation = tf.nn.sigmoid(with_bias)
+            if keep_proba is None:
+                return activation
             return tf.nn.dropout(activation, keep_prob=keep_proba, name="dropout")
-        else:
-            return activation
+        elif activation == "softmax":
+            return tf.nn.softmax(with_bias)
 
 
 def build_model(hidden_layers, n_classes, n_inputs=784, batch_size=None):
@@ -43,20 +45,22 @@ def build_model(hidden_layers, n_classes, n_inputs=784, batch_size=None):
             input_layer=prev_layer,
             input_size=prev_size,
             output_size=size,
+            activation="softmax",
             keep_proba=keep_proba,
             name="hidden_{}".format(i + 1)
         )
         prev_size = size
 
     # classification layer
-    classif = layer(
+    out = layer(
         input_layer=prev_layer,
         input_size=prev_size,
         output_size=n_classes,
+        activation="softmax",
         name="classif_layer"
     )
 
-    return x, y_true, tf.nn.softmax(classif), keep_proba
+    return x, y_true, out, keep_proba
 
 
 def cross_entropy(y_true, y_pred):
@@ -89,7 +93,7 @@ def main():
     learning_rate = 5e-2
     hidden_layers = [64, 32, 16]
     n_classes = 10
-    drop_prob = 0.5
+    drop_prob = 0.8
 
     # build graph and training machinery
     x, y_true, y_pred, keep_proba = build_model(
@@ -143,9 +147,9 @@ def main():
             val_acc = evaluate_model(sess, x, y_pred, x_val, y_val, batch_size=128, other_feed={keep_proba: 1.0})
             print("> #{: <5} train_loss:{:.4f} val_acc:{:.4f}".format(i, np.mean(losses[-10:]), val_acc))
 
-    print("Test")
-    test_acc = evaluate_model(sess, x, y_pred, x_test, y_test)
-    print("> accuracy: {}".format(test_acc))
+        print("Test")
+        test_acc = evaluate_model(sess, x, y_pred, x_test, y_test)
+        print("> accuracy: {}".format(test_acc))
 
 
 if __name__ == "__main__":
