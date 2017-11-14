@@ -87,9 +87,9 @@ def main():
     epochs = 200
     iter_per_epoch = 400
     learning_rate = 5e-2
-    hidden_layers = [64, 64, 32, 8]
+    hidden_layers = [64, 32, 16]
     n_classes = 10
-    drop_prob = 0.0
+    drop_prob = 0.5
 
     # build graph and training machinery
     x, y_true, y_pred, keep_proba = build_model(

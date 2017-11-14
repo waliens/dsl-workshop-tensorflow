@@ -26,9 +26,9 @@ if __name__ == "__main__":
     batch_size = 128
     epochs = 200
     learning_rate = 5e-2
-    hidden_layers = [64, 64, 32, 8]
+    hidden_layers = [64, 32, 16]
     n_classes = 10
-    keep_proba = 0.0
+    keep_proba = 0.5
 
     # model
     model = build_model(hidden_layers, n_classes, keep_proba=keep_proba)
