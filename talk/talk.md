@@ -8,10 +8,14 @@ class: middle, center
 ---
 name: with_footer
 
-#  I, Me, Mine
+#  "<i>I, Me, Mine</i>" 
 
 - **Doctorant en machine learning (ML)** à Montefiore sous la supervision de Pierre Geurts et Raphaël Marée  
 - **Recherche**: machine learning appliqué au traitement de (très) grandes images médicales
+
+.center[
+<img src="images/whole-slide-dim.png" height="275px" style="padding-top: 40px;">
+]
 
 ---
 
@@ -40,6 +44,8 @@ En <i>vision par ordinateur</i>: *pixel > bord > texton > motif > morceau > obje
 
 ???
 
+Image source: [https://i.stack.imgur.com/Hl2H6.png](https://i.stack.imgur.com/Hl2H6.png)
+
 ---
 # Deep learning ?
 
@@ -52,6 +58,10 @@ Autres exemples:
 </h2>
 
 .center[<img src="images/nn_learns_hfeatures.png" height="225px">]
+
+???
+
+Image source: https://cdn-images-1.medium.com/max/1600/0*1qOdceFenYSdGEYc.
 
 ---
 # Deep **learning** ?
@@ -115,7 +125,7 @@ Librairie de calcul numérique avec des outils pour le deep learning.
     - <span><img src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png" height="20px" style="position: relative; bottom: -5px;"/></span>&nbsp; Ne permet pas d'implémenter des comportements dynamiques
 - **Support deep learning**: beaucoup de composants de base disponibles
 - **Programmation déclarative**: le graphe de calcul est construit de manière déclarative
-    - Un pas vers l'impératif avec **Eager** (pre-alpha)
+    - Un pas vers l'impératif avec *Eager* (pre-alpha)
 - **Support (multi) GPU**
 - **TensorBoard**: outil de visualisation, monitoring temps réel via une interface web
 - ...
@@ -205,9 +215,12 @@ PyTorch est dévelopé par Facebook. Philosopie:
 - profondément intégré avec Python (*à la numpy*)
 - impératif 
 
+TODO
+
 ---
 # TensorFlow vs. Caffe2
 
+TODO
 
 ---
 # Deep learning with TensorFlow
@@ -219,6 +232,9 @@ Concentrons-nous sur un problème en particulier: la reconnaissance d'image et p
 - **Objectif**: étant donnée l'image, prédire le chiffre qu'elle contient  
 
 .center[<img src="images/mnist.png" height="300px">]
+
+???
+Image source: https://knowm.org/wp-content/uploads/Screen-Shot-2015-08-14-at-2.44.57-PM.png
 
 ---
 # (Deep) learning with TensorFlow
@@ -417,9 +433,9 @@ TODO
 
 Le *perceptron binaire* n'est jamais utilisé seul dans les applications réelles car **ce modèle est trop simple**.
 
-- il ne permet pas de *capturer la complexité* de problèmes réels
+- les *problèmes réels* sont *trop complexes* pour le perceptron
 - il est limité à des *problèmes binaires* 
-- il ne permet pas d'exploiter la *nature hierarchique* de certains problèmes
+- il est *superficiel* et ne permet pas d'exploiter la *nature hierarchique* de certains problèmes
 
 Nous allons étudier un *autre modèle* qui:
 
@@ -472,8 +488,6 @@ $$ \text{softmax}(\mathbf{x})\_i = \dfrac{e^{x\_i}}{\sum\_{k = 1}^{n} e^{x\_k}} 
 - la *sortie du réseau* $\mathbf{\hat{y}}$ est donc un *vecteur de probabilité* 
 - l'élément **$\hat{y}\_i$ est la probabilité que le chiffre soit $i$**
 
-???
-- entropie croisée multi-classe: 
 
 ---
 # Deep learning with TensorFlow
