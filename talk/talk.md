@@ -215,10 +215,15 @@ Concentrons-nous sur un problème en particulier: la reconnaissance d'image et p
 - Image en noir et blanc, taille 28x28 pixels
 - **Objectif**: étant donnée l'image, prédire le chiffre qu'elle contient  
 
-.center[<img src="images/mnist.png" height="300px">]
+.my-gallery[
+	<img src="images/mnist.png" height="300px">
+	<img src="images/image_is_pixel.gif" height="300px">
+]
 
 ???
-Image source: https://knowm.org/wp-content/uploads/Screen-Shot-2015-08-14-at-2.44.57-PM.png
+Image source:
+- https://knowm.org/wp-content/uploads/Screen-Shot-2015-08-14-at-2.44.57-PM.png
+- https://ujwlkarn.files.wordpress.com/2016/08/8-gif.gif?w=192&h=192
 
 ---
 # (Deep) learning with TensorFlow
@@ -541,7 +546,7 @@ for i, size in enumerate([64, 32, 16]):
 # Deep learning with TensorFlow
 ## Perceptron multicouche > graphe
 
-.col-gallery[
+.my-gallery[
     <img src="images/mlp_tb.png" height="450px">
     <img src="images/mlp_tb_h3.png" height="450px">
 ]
@@ -664,9 +669,11 @@ Un réseau convolutif est en général construit de la manière suivante:
 Une **convolution** (à deux dimensions) est une *transformation linéaire d'un signal* (e.g. une image).
 
 .center[
-	<img src="http://machinelearninguru.com/_images/topics/computer_vision/basics/convolutional_layer_1/rgb.gif" height="375px">
+	<img src="images/rgb.gif" height="375px">
 ]
 
+???
+Image source: http://machinelearninguru.com/_images/topics/computer_vision/basics/convolutional_layer_1/rgb.gif
 ---
 # Deep learning with Keras
 ## Réseaux convolutifs > convolution (ii)
@@ -679,20 +686,114 @@ En pratique:
 Paramètres de dimensionnement d'une couche de convolution: 
 
 - le *nombre de filtre*  
-- la *taille des noyaux* (<i>kernel size</i>s)
+- la *taille des noyaux* (<i>kernel size</i>)
 - le *pas* des noyaux (<i>strides</i>)
+- le *stratégie de gestion des bords* (<i>padding</i>)
 
-En **Keras**:
+Avec **Keras**:
 
 ```python
-
+# arbitrary values: 32 3x3 kernels, with stride 1x1
+x = Conv2D(filters=32, kernel_size=(3, 3), strides=1, padding="same")(x)
 ```
 
 ---
 # Deep learning with Keras
-## Réseaux convolutifs > pooling
+## Réseaux convolutifs > activation
+
+On va utiliser une nouvelle fonction d'activation: l'**unité de rectification linéaire** (<i>rectified linear unit</i>, or <i>ReLU</i>):
+
+$$\text{relu}(x) = \max(0, x)$$
+
+.center[
+	<img src="images/relu.png" height="250px">
+]
+
+La fonction sera *appliquée après chaque couche de convolution*.
+
+???
+Image source: https://i.stack.imgur.com/8CGlM.png
+
+---
+# Deep learning with Keras
+## Réseaux convolutifs > pooling (i)
+
+La **couche de pooling** va appliquer un sous-échantillonage à son signal d'entrée. Plusieurs stratégies sont possibles: *max pooling*, *average pooling*,...
+
+.center[
+	<img src="images/maxpool.jpeg" height="250px">
+]
+
+La *sortie* de la couche de pooling sera donc *de taille moindre* que son entrée !
+
+???
+Image source: https://qph.ec.quoracdn.net/main-qimg-8afedfb2f82f279781bfefa269bc6a90
 
 
+---
+# Deep learning with Keras
+## Réseaux convolutifs > pooling (ii)
+
+Paramètres de dimensionnement d'une couche de pooling:
+
+- la *stratégie de pooling*
+- la *taille des noyaux* (<i>pool size</i>)
+- le *pas* des noyaux (<i>strides</i>)
+- le *stratégie de gestion des bords* (<i>padding</i>)
+
+En **Keras**:
+
+```python
+# max pooling with a 2x2 kernel and 2x2 stride
+x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
+```
+```python
+# average pooling with a 2x2 kernel and 2x2 stride
+x = AveragePooling2D(pool_size=2, strides=2, padding="same")(x)
+```
+
+---
+# Deep learning with Keras
+## Réseaux convolutifs > implémentation (i)
+
+Construisons notre propre réseau convolutif:
+
+<img src="images/convnet.png" height="115px">
+
+- *Couche 1*: 32 filtres 3x3, ReLU, pas de pooling
+- *Couche 2*: 32 filtres 3x3, ReLU, max pooling 2x2 avec stride 2x2
+- *Couche 3*: 16 filtres 3x3, ReLU, max pooling 2x2 avec stride 2x2 
+- *Couche 4*: <i>fully connecter layer</i>, 32 neurones, ReLU
+- *Couche 5*: <i>fully connecter layer</i>, 16 neurones, ReLU
+- *Couche 6*: <i>fully connecter layer</i>, 10 neurones, Softmax
+
+---
+# Deep learning with Keras
+## Réseaux convolutifs > implémentation (ii)
+
+```python
+input = Input(shape=[28, 28, 1])
+
+# layer 1
+x = Conv2D(32, kernel_size=3, padding="same", activation="relu")(input)
+x = Activation("relu")(x)
+
+# layer 2
+x = Conv2D(32, kernel_size=3, padding="same", activation="relu")(x)
+x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
+
+# layer 3
+x = Conv2D(16, kernel_size=3, padding="same", activation="relu")(x)
+x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
+
+# fully connected
+x = Flatten()(x)
+x = Dense(32, activation="relu")(x)
+x = Dense(16, activation="relu")(x)
+x = Dense(10, activation="softmax")(x)
+
+model = Model(inputs=[input], outputs=[x])
+```
 ---
 # a
 On obtient *0.9879* d'exactitude.
@@ -717,6 +818,20 @@ out = Dense(n_classes, activation="softmax")(resnet.output)
 model = Model(inputs=resnet.input, outputs=out)
 ```  
 
+
+---
+# Conclusion
+
+Ce qu'on a vu:
+- **3 types de modèles**: perceptron binaire, perceptron multicouche et réseaux convolutifs
+- **3 fonctions d'activation**: sigmoïde, softmax et ReLU
+- **2 fonctions de perte**: entropie croisée binaire et multi-classe
+- ...
+- et surtout *comment les implémenter* avec TensorFlow/Keras pour traiter un *problème de reconnaissance d'image* 
+
+Mais **nous avons juste gratté la surface** !
+
+
 ---
 # Pour aller plus loin !
 
@@ -737,6 +852,11 @@ Frameworks:
 
 - [Quora - How does Caffe 2 compare to TensorFlow?](https://www.quora.com/How-does-Caffe-2-compare-to-TensorFlow)
 - [Quora - What are the pros and cons of PyTorch vs Keras?](https://www.quora.com/What-are-the-pros-and-cons-of-PyTorch-vs-Keras)
+
+---
+count: false
+
+<h1 style="vertical-align: center; text-align: center;">Merci !</h1>
 
 ---
 count: false
@@ -787,3 +907,21 @@ count: false
         probas, = sess.run([out], feed_dict=feed)
 ```
 
+---
+count: false
+
+# Deep learning with Keras
+## Réseaux convolutifs > pourquoi ces étapes ? 
+
+L'utilisation de ces éléments a plusieurs impacts bénéfiques:
+
+- *partage des paramètres* (grâche au convolution)
+- *invariance spatiale* (grâce au pooling)
+- les filtres génèrent des *descripteurs bas-niveau performants* (bords, courbes,...)
+- *rapide* en terme de temps d'exécution
+
+???
+- partage des paramètres: réduction de la complexité du modèle (faster and more performant)
+- invariance spatiale: un objet peut être détecté quelque soit sa position dans l'image
+- filtres appris souvent similaires à des filtres classiques de traitement d'image
+- rapide: : <i>ReLU</i> est plus simple à calculer qu'une sigmoïde
