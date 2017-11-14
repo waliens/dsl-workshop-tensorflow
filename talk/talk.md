@@ -34,7 +34,7 @@ Un **modèle** peut être vu comme une relation entre une ensemble d'entrées (i
 
 # Deep learning ?
 
-Le **deep learning** est un ensemble de méthodes de machine learning basée sur l'apprentissage de **hierarchies de descripteurs** (<i>hierarchical features</i>). 
+Le **deep learning** est un ensemble de méthodes de machine learning basées sur l'apprentissage de **hierarchies de descripteurs** (<i>hierarchical features</i>). 
 
 Un **descripteur** (<i>feature</i>) est une information extraite d'une entité dans le but de la décrire.
 
@@ -69,8 +69,8 @@ Image source: https://cdn-images-1.medium.com/max/1600/0*1qOdceFenYSdGEYc.
 Travailler avec un modèle sur une tâche cible implique en général deux grandes étapes:
 
 - **entraînement** (<i>training, learning</i>): on optimise les paramètres du modèle afin d'améliorer ses performances. Procédure classique: 
-    1. on fournit au modèle un sous-ensemble aléatoire des données d'entraînement (<i>batch</i>) pour lesquels on connait l'objectif et il retourne un ensemble de prédiction $\hat{y}$
-    2. on indique au modèle à quel point ces prédictions $\hat{y}$ sont erronnées à l'aide d'une **fonction de perte/d'erreur** (<i>loss function</i>)
+    1. on fournit au modèle un sous-ensemble aléatoire des données d'entraînement (<i>batch</i>) pour lesquels on connait l'objectif et il retourne un ensemble de prédictions $\hat{y}$
+    2. on indique au modèle à quel point ses prédictions $\hat{y}$ sont erronnées à l'aide d'une **fonction de perte/d'erreur** (<i>loss function</i>)
     3. sur base de l'erreur, les paramètres du modèle sont ajustés pour améliorer ses performances (via **backpropagation**)
     4. on répète les étapes 1 à 3 jusqu'à ce que le modèle soit suffisamment performant
 - **inférence** (<i>prediction, inference</i>): utilisation du modèle afin de produire une prédiction sur des nouvelles données
@@ -109,7 +109,7 @@ Quelques chiffres (sur GitHub):
 - 1134 contributeurs
 - 24117 commits, ~250 par semaine
 - 76199 followers
-- 1162 issues ouverts (7689 fermées)
+- 1162 issues ouvertes (7689 fermées)
 
 ???
 Librairie de calcul numérique avec des outils pour le deep learning.
@@ -202,25 +202,9 @@ Keras, d'après son créateur:
 
 Philosophie:
 
-- **User-friendliness**: dévelopé de manière à réduire la charge cognitive du développeur (i.e. API cohérente et simple, feedback d'erreor clairs et exploitables, use cases communs implémentables en un nombre réduit d'étapes...)
+- **User-friendliness**: dévelopé de manière à réduire la charge cognitive du développeur (i.e. API cohérente et simple, feedback d'erreur clair et exploitable, use cases communs implémentables en un nombre réduit d'étapes...)
 - **Modularité**: la librairie est structurée comme un ensemble de modules indépendants qui peuvent être combinés pour créer des modèles
 - **Extensibilité**: de nouveaux modules peuvent être créés et intégrés de manière simple
-
----
-# TensorFlow vs. PyTorch
-
-PyTorch est dévelopé par Facebook. Philosopie:
-
-- graphe dynamique
-- profondément intégré avec Python (*à la numpy*)
-- impératif 
-
-TODO
-
----
-# TensorFlow vs. Caffe2
-
-TODO
 
 ---
 # Deep learning with TensorFlow
@@ -419,13 +403,6 @@ with tf.Session() as sess:
 - forward pass
 - backpropagation
 - mise à jour des poids
-
----
-# Deep learning with TensorFlow
-## Perceptron binaire > résultats 
-
-TODO
-
 
 ---
 # Deep learning with TensorFlow
@@ -632,7 +609,7 @@ Epoch 1/200
 55000/55000 [============] - 4s - val_loss: 2.3002 - val_acc: 0.1126
 Epoch 2/200
 55000/55000 [============] - 1s - val_loss: 2.2999 - val_acc: 0.1126
-Epoch 3/200
+Epoch 3/200%
 55000/55000 [============] - 1s - val_loss: 2.2988 - val_acc: 0.1126
 Epoch 4/200
 43648/55000 [=========>..] - ETA: 0s - loss: 2.2988 - acc: 0.1172
@@ -644,13 +621,126 @@ y_pred = model.predict(new_images, batch_size=batch_size)
 ```
 
 ---
-# How to deal with images ?
+# Deep learning with Keras
+## Vers un modèle (encore) plus réaliste...
+
+On obtient *97% d'exactitude* (<i>accuracy</i>) avec le perceptron multicouche... mais on peut faire mieux !
+
+En pratique, les problèmes impliquants des images sont abordés avec des...
+
+<h2 style="text-align: center; padding-top: 20px; font-size: 115%;">
+   	<em>Réseaux de neurones convolutifs</em><br> 
+   	<span style="font-size: 80%">(<i>convolutional neural networks</i>)</span>
+</h2>
+
+.center[
+	<img src="images/LeNet.png">
+] 
+
+???
+Image source: https://adeshpande3.github.io/assets/LeNet.png
 
 ---
-# Pre-trained model
+# Deep learning with Keras
+## Réseaux convolutifs > structure 
+
+Un réseau convolutif est en général construit de la manière suivante:
+
+- une **série de blocs de convolution** eux-mêmes composés:
+	- d'une couche de *convolution*
+	- d'une *fonction d'activation*
+	- <i>(optionnel)</i> d'une couche de *pooling*
+
+- un **perceptron multicouche**
+
+.center[
+	<img src="images/LeNet.png" height="95%">
+] 
+
+---
+# Deep learning with Keras
+## Réseaux convolutifs > convolution (i)
+
+Une **convolution** (à deux dimensions) est une *transformation linéaire d'un signal* (e.g. une image).
+
+.center[
+	<img src="http://machinelearninguru.com/_images/topics/computer_vision/basics/convolutional_layer_1/rgb.gif" height="375px">
+]
+
+---
+# Deep learning with Keras
+## Réseaux convolutifs > convolution (ii)
+
+En pratique:
+
+- plusieurs filtres par couche
+- les **noyaux sont appris** !
+
+Paramètres de dimensionnement d'une couche de convolution: 
+
+- le *nombre de filtre*  
+- la *taille des noyaux* (<i>kernel size</i>s)
+- le *pas* des noyaux (<i>strides</i>)
+
+En **Keras**:
+
+```python
+
+```
+
+---
+# Deep learning with Keras
+## Réseaux convolutifs > pooling
 
 
 ---
+# a
+On obtient *0.9879* d'exactitude.
+
+---
+# Transfer learning
+
+Des chercheurs ont montré qu'on peut **entraîner un modèle sur un problème A** et le **transférer sur un problème B**. 
+
+Par example: 
+- *tâche A*: identifier l'objet principal dans une photo
+- *tâche B*: reconnaître des cellules malades ou saines dans des images médicales
+
+**Keras** permet d'utiliser des *modèles profonds pré-entraînés* sur la base de données *ImageNet*. Par exemple, le réseau <i>ResNet</i> 50 couches:
+
+```python
+from keras.applications import ResNet50
+from keras.layers import Dense
+
+resnet = ResNet50((224, 224, 3), weights="imagenet", include_top=False)
+out = Dense(n_classes, activation="softmax")(resnet.output)
+model = Model(inputs=resnet.input, outputs=out)
+```  
+
+---
+# Pour aller plus loin !
+
+Améliorer les performances des réseaux: 
+
+- **régularisation**: [dropout](https://stats.stackexchange.com/questions/241645/how-to-explain-dropout-regularization-in-simple-terms), [weight decay](https://stats.stackexchange.com/questions/273189/what-is-the-weight-decay-loss)
+- **conditionnement**: [batch normalization](https://gab41.lab41.org/batch-normalization-what-the-hey-d480039a9e3b), [deep residual networks](http://kaiminghe.com/icml16tutorial/icml2016_tutorial_deep_residual_networks_kaiminghe.pdf)
+- **optimisation**: [comparaison des méthodes](http://ruder.io/optimizing-gradient-descent/)
+- **transfert**: [<i>CS231n: Transfer Learning</i>](http://cs231n.github.io/transfer-learning/)
+
+Compréhension:
+
+- **fonctions d'activation**: [<i>Activation Functions in Neural Networks</i>](https://medium.com/the-theory-of-everything/understanding-activation-functions-in-neural-networks-9491262884e0)
+- **réseaux convolutifs**: [<i>CS231n: Convolutional Neural Networks</i>](http://cs231n.github.io/convolutional-networks/)
+- **backpropagation**: [<i>What is backpropagation and what is it actually doing?</i>](https://www.youtube.com/watch?v=Ilg3gGewQ5U) 
+
+Frameworks:
+
+- [Quora - How does Caffe 2 compare to TensorFlow?](https://www.quora.com/How-does-Caffe-2-compare-to-TensorFlow)
+- [Quora - What are the pros and cons of PyTorch vs Keras?](https://www.quora.com/What-are-the-pros-and-cons-of-PyTorch-vs-Keras)
+
+---
+count: false
+
 # TensorFlow
 ## Exécution: choix du device
 
@@ -683,6 +773,8 @@ if __name__ == "__main__":
 ```
 
 ---
+count: false
+
 # (Deep) learning with TensorFlow
 ## Perceptron binaire > inférence - code
 
@@ -695,9 +787,3 @@ if __name__ == "__main__":
         probas, = sess.run([out], feed_dict=feed)
 ```
 
----
-# Interesting resources
-
-- [PyTorch vs TensorFlow — spotting the difference \[EN\]](https://towardsdatascience.com/pytorch-vs-tensorflow-spotting-the-difference-25c75777377b)
-- [Quora - What are the pros and cons of PyTorch vs Keras? \[EN\]](https://www.quora.com/What-are-the-pros-and-cons-of-PyTorch-vs-Keras)
-- [Video: What is backpropagation and what is it actually doing?](https://www.youtube.com/watch?v=Ilg3gGewQ5U) 
