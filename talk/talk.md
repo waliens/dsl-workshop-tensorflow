@@ -90,6 +90,7 @@ Beaucoup de frameworks disponibles:
 - **Theano** (fin du support annoncée le 28/09/2017)
 - ...
 
+???
 Ne pas s'enfermer dans un framework en particulier ! 
 
 ---
@@ -118,6 +119,7 @@ Librairie de calcul numérique avec des outils pour le deep learning.
 # TensorFlow 
 
 <span style="font-size: 90%"> 
+- **Librairie de mathématique symbolique**
 - **Interface de programmation en Python** mais coeur en C++
 - **Graphe de calcul statique**: les noeuds sont les *opérations* et les arêtes sont les *tenseurs*
     - Le graphe doit être compilé avant d'être utilisé
@@ -128,7 +130,6 @@ Librairie de calcul numérique avec des outils pour le deep learning.
     - Un pas vers l'impératif avec *Eager* (pre-alpha)
 - **Support (multi) GPU**
 - **TensorBoard**: outil de visualisation, monitoring temps réel via une interface web
-- ...
 </span>
 
 ???
@@ -467,30 +468,35 @@ La fonction **softmax** est une nouvelle *fonction d'activation*:
 $$ \text{softmax}(\mathbf{x})\_i = \dfrac{e^{x\_i}}{\sum\_{k = 1}^{n} e^{x\_k}} $$ 
 
 - $\text{softmax}(\mathbf{x})\_i$ peut être interprété comme une probabilité
-- la *sortie du réseau* $\mathbf{\hat{y}}$ est donc un *vecteur de probabilité* 
-- l'élément **$\hat{y}\_i$ est la probabilité que le chiffre soit $i$**
+- l'élément $\hat{y}\_i$ de $\mathbf{\hat{y}}$ **est la probabilité que le chiffre soit $i$**
 
+.center[<img src="images/softmax.png" height="175px">]
 
+???
+Image source: https://i1.wp.com/contribute.geeksforgeeks.org/wp-content/uploads/softmax1.png
 ---
 # Deep learning with TensorFlow
 ## Perceptron multicouche > implémentation (i)
 
 - fonction générique pour créer un couche dense (<i>fully connected</i> or <i> dense layer</i>):
 ```python
-def layer(input_layer, input_size, output_size, name=""):
+def layer(in_layer, in_size, out_size, activ="sigmoid", name=""):
         w = tf.Variable(
-            initial_value=tf.truncated_normal([input_size, output_size]),
+            initial_value=tf.truncated_normal([in_size, out_size]),
             trainable=True, name="{}/weights".format(name)
         )
         bias = tf.Variable(
-            initial_value=tf.zeros([output_size]),
+            initial_value=tf.zeros([out_size]),
             trainable=True, name="{}/bias".format(name)
         )
 
         # compute activation
-        prod = tf.matmul(input_layer, w)
+        prod = tf.matmul(in_layer, w)
         with_bias = tf.nn.bias_add(prod, bias)
-        return tf.nn.sigmoid(with_bias, name="{}/out".format(name))
+        if activ == "softmax":
+            return tf.nn.softmax(with_bias, name="{}/out".format(name))
+        else:
+            return tf.nn.sigmoid(with_bias, name="{}/out".format(name))
 ```
 
 ---
@@ -508,9 +514,10 @@ prev_layer = x
 prev_size = 784
 for i, size in enumerate([64, 32, 16]):
         prev_layer = layer(
-            input_layer=prev_layer,
-            input_size=prev_size, 
-            output_size=size,
+            in_layer=prev_layer,
+            in_size=prev_size, 
+            out_size=size,
+            activ="sigmoid",
             name="hidden_{}".format(i + 1)
         )
         prev_size = size
@@ -523,14 +530,13 @@ for i, size in enumerate([64, 32, 16]):
 
 - la *couche de sortie*:
 ```python
-    classif = layer(
-        input_layer=prev_layer,
-        input_size=prev_size, 
-        output_size=10
+    out = layer(
+        in_layer=prev_layer,
+        in_size=prev_size, 
+        out_size=10
+        activ="softmax", 
         name="output_layer"
     )
-
-    out = tf.nn.softmax(classif)
 ```
 
 - la *fonction de perte*: $ $ $\mathcal{L}(\mathbf{y}, \mathbf{\hat{y}}) = - \sum\_{i = 1}^{10} y\_i \log \hat{y}\_i$
@@ -551,11 +557,6 @@ for i, size in enumerate([64, 32, 16]):
     <img src="images/mlp_tb_h3.png" height="450px">
 ]
 
----
-# Deep learning with TensorFlow
-## Perceptron multicouche > résultats
-
-TODO
 
 ---
 # Deep learning with Keras
@@ -651,9 +652,9 @@ Image source: https://adeshpande3.github.io/assets/LeNet.png
 
 Un réseau convolutif est en général construit de la manière suivante:
 
-- une **série de blocs de convolution** eux-mêmes composés:
-	- d'une couche de *convolution*
-	- d'une *fonction d'activation*
+- une **série de blocs de convolution** transformant leur entrée en *feature maps* avec les opérations suivantes:
+	- une couche de *convolution*
+	- une *fonction d'activation*
 	- <i>(optionnel)</i> d'une couche de *pooling*
 
 - un **perceptron multicouche**
@@ -718,13 +719,13 @@ Image source: https://i.stack.imgur.com/8CGlM.png
 # Deep learning with Keras
 ## Réseaux convolutifs > pooling (i)
 
-La **couche de pooling** va appliquer un sous-échantillonage à son signal d'entrée. Plusieurs stratégies sont possibles: *max pooling*, *average pooling*,...
+La **couche de pooling** sous-échantillonne son signal d'entrée. Plusieurs stratégies sont possibles: *max pooling*, *average pooling*,...
 
 .center[
 	<img src="images/maxpool.jpeg" height="250px">
 ]
 
-La *sortie* de la couche de pooling sera donc *de taille moindre* que son entrée !
+Le pooling apporte l'**invariance en translation**: le réseau peut détecter un objet quelque soit sa position dans l'image d'entrée.
 
 ???
 Image source: https://qph.ec.quoracdn.net/main-qimg-8afedfb2f82f279781bfefa269bc6a90
@@ -776,7 +777,6 @@ input = Input(shape=[28, 28, 1])
 
 # layer 1
 x = Conv2D(32, kernel_size=3, padding="same", activation="relu")(input)
-x = Activation("relu")(x)
 
 # layer 2
 x = Conv2D(32, kernel_size=3, padding="same", activation="relu")(x)
@@ -795,13 +795,24 @@ x = Dense(10, activation="softmax")(x)
 model = Model(inputs=[input], outputs=[x])
 ```
 ---
-# a
-On obtient *0.9879* d'exactitude.
+# Deep learning with Keras
+## Réseaux convolutifs > entraînement et inférence
+
+Les *codes d'entraînement et d'inférence*  sont les *mêmes que pour le perceptron multicouche*. On doit juste transformer les images en matrice plutôt qu'en vecteur.
+
+.center[<span style="font-size: 1.3em;">On obtient **98,79% d'exactitude** !</span>]  
+
+On pourrait *encore raffiner le modèle* avec notamment:
+- batch normalization
+- dropout dans les couches <i>fully connected</i>
+- plus de couches
+- des connexions résiduelles
+- ...
 
 ---
 # Transfer learning
 
-Des chercheurs ont montré qu'on peut **entraîner un modèle sur un problème A** et le **transférer sur un problème B**. 
+Il a été montré qu'on peut **entraîner un modèle sur un problème A** et l'**utiliser sur un problème B**. 
 
 Par example: 
 - *tâche A*: identifier l'objet principal dans une photo
@@ -817,7 +828,6 @@ resnet = ResNet50((224, 224, 3), weights="imagenet", include_top=False)
 out = Dense(n_classes, activation="softmax")(resnet.output)
 model = Model(inputs=resnet.input, outputs=out)
 ```  
-
 
 ---
 # Conclusion
@@ -855,8 +865,10 @@ Frameworks:
 
 ---
 count: false
+class: middle, center
 
-<h1 style="vertical-align: center; text-align: center;">Merci !</h1>
+# Merci !
+## Des questions ?
 
 ---
 count: false
