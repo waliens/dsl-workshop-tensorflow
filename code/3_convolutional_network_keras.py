@@ -5,11 +5,11 @@ from tensorflow.contrib.learn.python.learn import datasets
 
 from keras import Input
 from keras.engine import Model
-from keras.layers import Conv2D, Activation, MaxPooling2D, Dense, Flatten
+from keras.layers import Conv2D, Activation, MaxPooling2D, Dense, Flatten, BatchNormalization, Dropout
 from keras.optimizers import sgd
 
 
-def build_model(height, width, n_classes):
+def build_model(height, width, n_classes, drop_proba=0.5):
     input = Input(shape=[height, width, 1])
 
     # layer 1
@@ -17,11 +17,13 @@ def build_model(height, width, n_classes):
     x = Activation("relu")(x)
 
     # layer 2
+    x = BatchNormalization()(x)
     x = Conv2D(32, kernel_size=3, padding="same")(x)
     x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
     x = Activation("relu")(x)
 
     # layer 3
+    x = BatchNormalization()(x)
     x = Conv2D(16, kernel_size=3, padding="same")(x)
     x = MaxPooling2D(pool_size=2, strides=2, padding="same")(x)
     x = Activation("relu")(x)
@@ -29,7 +31,9 @@ def build_model(height, width, n_classes):
     # fully connected
     x = Flatten()(x)
     x = Dense(32, activation="relu")(x)
+    x = Dropout(drop_proba)(x)
     x = Dense(16, activation="relu")(x)
+    x = Dropout(drop_proba)(x)
     x = Dense(n_classes, activation="softmax")(x)
 
     return Model(inputs=[input], outputs=[x])
