@@ -8,12 +8,14 @@ class: middle, center
 ---
 class: middle, center
 
-# Slides
+# Liens utiles
 
 Slides du talk: https://goo.gl/vqdHSN
 
 Slides du workshop: https://goo.gl/8czTkj
 
+GitHub: https://github.com/waliens/dsl-workshop-tensorflow<br>
+<span style="font-size: 0.8em;">(contient les scripts finaux, dossier `code/`)</span>
 ---
 class: center, middle
 
