@@ -18,6 +18,32 @@ name: with_footer
 ]
 
 ---
+# Au programme
+
+- Machine et deep learning
+
+- Frameworks de deep learning, TensorFlow et Keras
+
+- Deep learning avec TensorFlow et Keras
+    - Perceptron binaire
+    - Perceptron multicouche
+    - Réseaux convolutifs
+    - Transfer learning
+
+---
+# Au programme
+
+- **Machine et deep learning**
+
+- Frameworks de deep learning, TensorFlow et Keras
+
+- Deep learning avec TensorFlow et Keras
+    - Perceptron binaire
+    - Perceptron multicouche
+    - Réseaux convolutifs
+    - Transfer learning
+
+---
 
 # Machine learning ?
 
@@ -76,6 +102,19 @@ Travailler avec un modèle sur une tâche cible implique en général deux grand
 - **inférence** (<i>prediction, inference</i>): utilisation du modèle afin de produire une prédiction sur des nouvelles données
 
 ---
+# Au programme
+
+- Machine et deep learning
+
+- **Frameworks de deep learning, TensorFlow et Keras**
+
+- Deep learning avec TensorFlow et Keras
+    - Perceptron binaire
+    - Perceptron multicouche
+    - Réseaux convolutifs
+    - Transfer learning
+---
+
 # Deep learning frameworks 
 
 Beaucoup de frameworks disponibles: 
@@ -206,6 +245,19 @@ Philosophie:
 - **User-friendliness**: dévelopé de manière à réduire la charge cognitive du développeur (i.e. API cohérente et simple, feedback d'erreur clair et exploitable, use cases communs implémentables en un nombre réduit d'étapes...)
 - **Modularité**: la librairie est structurée comme un ensemble de modules indépendants qui peuvent être combinés pour créer des modèles
 - **Extensibilité**: de nouveaux modules peuvent être créés et intégrés de manière simple
+
+---
+# Au programme
+
+- Machine et deep learning
+
+- Frameworks de deep learning, TensorFlow et Keras
+
+- **Deep learning avec TensorFlow et Keras**
+    - Perceptron binaire
+    - Perceptron multicouche
+    - Réseaux convolutifs
+    - Transfer learning
 
 ---
 # Deep learning with TensorFlow
