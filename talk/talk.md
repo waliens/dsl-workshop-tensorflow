@@ -816,9 +816,9 @@ Construisons notre propre réseau convolutif:
 - *Couche 1*: 32 filtres 3x3, ReLU, pas de pooling
 - *Couche 2*: 32 filtres 3x3, ReLU, max pooling 2x2 avec stride 2x2
 - *Couche 3*: 16 filtres 3x3, ReLU, max pooling 2x2 avec stride 2x2 
-- *Couche 4*: <i>fully connecter layer</i>, 32 neurones, ReLU
-- *Couche 5*: <i>fully connecter layer</i>, 16 neurones, ReLU
-- *Couche 6*: <i>fully connecter layer</i>, 10 neurones, Softmax
+- *Couche 4*: fully connected layer, 32 neurones, ReLU
+- *Couche 5*: fully connected layer, 16 neurones, ReLU
+- *Couche 6*: fully connected layer, 10 neurones, Softmax
 
 ---
 # Deep learning with Keras
@@ -846,6 +846,7 @@ x = Dense(10, activation="softmax")(x)
 
 model = Model(inputs=[input], outputs=[x])
 ```
+
 ---
 # Deep learning with Keras
 ## Réseaux convolutifs > entraînement et inférence
@@ -855,8 +856,8 @@ Les *codes d'entraînement et d'inférence*  sont les *mêmes que pour le percep
 .center[<span style="font-size: 1.3em;">On obtient **98,79% d'exactitude** !</span>]  
 
 On pourrait *encore raffiner le modèle* avec notamment:
-- batch normalization
-- dropout dans les couches <i>fully connected</i>
+- <i>batch normalization</i>
+- <i>dropout</i> dans les couches <i>fully connected</i>
 - plus de couches
 - des connexions résiduelles
 - ...
