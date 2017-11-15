@@ -57,7 +57,7 @@ def extract_two_digits(digit0, digit1):
     return x_train, y_train, x_val, y_val, x_test, y_test
 
 
-def evaluate_model(sess, x, y, x_test, y_test, batch_size=64):
+def evaluate_binary_model(sess, x, y, x_test, y_test, batch_size=64):
     n_samples = x_test.shape[0]
     n_batches = int(math.ceil(n_samples / batch_size))
     y_pred = np.zeros([n_samples], dtype=np.float)
@@ -116,11 +116,11 @@ def main():
                 _loss, _ = sess.run([loss, optimizer], feed_dict=feed)
                 losses.append(_loss)
 
-            val_acc, val_roc = evaluate_model(sess, x, y_pred, x_val, y_val, batch_size=128)
+            val_acc, val_roc = evaluate_binary_model(sess, x, y_pred, x_val, y_val, batch_size=128)
             print("> #{: <5} train_loss:{:.4f} val_acc:{:.4f} val_roc:{:.4f}".format(i, np.mean(losses), val_acc, val_roc))
 
         print("Test")
-        test_acc, test_roc = evaluate_model(sess, x, y_pred, x_test, y_test)
+        test_acc, test_roc = evaluate_binary_model(sess, x, y_pred, x_test, y_test)
         print("> accuracy: {}".format(test_acc))
         print("> roc_auc : {}".format(test_roc))
 
